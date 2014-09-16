@@ -1,0 +1,550 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+//#include <windows.h>
+
+#define SATU 49
+#define DUA 50
+#define TIGA 51
+#define EMPAT 52
+#define LIMA 53
+#define ENAM 54
+#define TUJUH 55
+#define DELAPAN 56
+#define SEMBILAN 57
+#define SPACE 32
+
+int x,y,check[10],difficulty,result,level,menu;
+char player_name[30];
+void delay(unsigned int mseconds)
+{
+    clock_t goal = mseconds + clock();
+    while (goal > clock());
+}
+/*void setcolor(unsigned short color)
+{
+HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
+
+SetConsoleTextAttribute(hCon,color);
+}*/
+
+void player_data(void);
+void introduction(void);
+int difficulty_level(void);
+int problem_beginner(void);
+int problem_intermediate(void);
+int problem_expert (void);
+void win_lose_sequences(int result);
+int player_winning_log (int result, char player_name, int level);
+
+int main()
+{
+
+    srand(time(NULL));
+    system("color b");
+    introduction();
+    delay(50);
+    player_data();
+    delay(50);
+
+    navigation_menu:
+        system("CLS");
+        printf("\t=============================================================== \n");
+        printf("\t\t\t\t MENU \n");
+        printf("\t=============================================================== \n");
+        printf("What do you want to do? (1/2/3) \n");
+        printf("1. Play \n");
+        printf("2. Open Player Log \n");
+        printf("3. Exit \n");
+        scanf("%d",&menu);
+        switch(menu)
+        {
+            case 1 : goto play; break;
+            case 2 : goto player_log; break;
+            case 3 : goto end; break;
+            default : goto navigation_menu; break;
+
+    play:
+    level_select:
+    difficulty_level();
+    switch (difficulty)
+    {
+        case 1  :system("CLS"); problem_beginner(); break;
+        case 2  :system("CLS"); problem_intermediate();break;
+        case 3  :system("CLS"); problem_expert();break;
+        default : goto level_select; break;
+    }
+        system("CLS");
+
+    //CREATE PLAYER LOG
+     FILE *fp;
+        int x = 10;
+
+        fp=fopen("player_log.txt", "a");
+        if(fp == NULL)
+        exit(-1);
+
+        if (result==1)
+        {
+            fprintf(fp, "%s : ",player_name);
+            fprintf(fp, "Winning on ");
+            if (level==1) fprintf(fp, "Beginner Mode \n");
+            if (level==2) fprintf(fp, "Intermediate Mode \n");
+            if (level==3) fprintf(fp, "Expert Mode \n");
+            fclose(fp);
+        }
+
+        if (result==0)
+        {
+            fprintf(fp, "%s : ",player_name);
+            fprintf(fp, "Losing on ");
+            if (level==1) fprintf(fp, "Beginner Mode \n");
+            if (level==2) fprintf(fp, "Intermediate Mode \n");
+            if (level==3) fprintf(fp, "Expert Mode \n");
+            fclose(fp);
+        }
+    win_lose_sequences(result);
+    system("PAUSE");
+    goto navigation_menu;
+
+    //READ PLAYER LOG
+    player_log:
+    system("CLS");
+    printf("=============================================================== \n");
+    printf("                       PLAYER LOG \n");
+    printf("=============================================================== \n");
+
+    FILE *ptr_file;
+    char text[1000];
+    ptr_file =fopen("player_log.txt","r");
+    		if (!ptr_file)
+        		return 1;
+
+    		while (fgets(text,1000, ptr_file)!=NULL)
+        		printf("%s",text);
+    system("PAUSE");
+    goto navigation_menu;
+
+    end:
+    system("PAUSE");
+    return 0;
+}
+}
+void player_data(void)
+{
+  printf("Input your name \n");
+  scanf("%s",&player_name);
+  return player_name;
+}
+void introduction(void)
+{
+    printf("\t=============================================================== \n");
+    delay(50);
+    printf("\t        _        _        _        _        _        _    \n");
+    delay(50);
+    printf("\t      _( )__   _( )__   _( )__   _( )__   _( )__   _( )__ \n");
+    delay(50);
+    printf("\t    _|     _|_|     _|_|     _|_|     _|_|     _|_|     _|\n");
+    delay(50);
+    printf("\t   (_ S _ (_(_ U _ (_(_ D _ (_(_ O _ (_(_ K _ (_(_ U _ (_ \n");
+    delay(50);
+    printf("\t     |_( )__| |_( )__| |_( )__| |_( )__| |_( )__| |_( )__|\n");
+    delay(50);
+    printf("\t=============================================================== \n\n");
+    printf ("\t\t\t\t\t SUDOKU PROJECT V.0.2.4 \n\n");
+    delay(50);
+    printf("\t=============================================================== \n");
+    delay(50);
+    printf ("\tBy   : Achnafian Rafif Zufaryansyah \n");
+    delay(50);
+    printf ("\tMajor: Electrical Engineering - University of Brawijaya \n");
+    delay(50);
+    printf ("\tNIM  : 135060307111013 \n");
+    delay(50);
+    printf("\t=============================================================== \n\n");
+}
+
+int difficulty_level(void)
+{
+
+    printf("=============================================================== \n");
+    printf("Difficulty Level \n");
+    printf("=============================================================== \n");
+    printf("1. Beginner \n");
+    printf("2. Intermediate \n");
+    printf("3. Expert \n");
+    printf("=============================================================== \n");
+    printf("Select your desired difficulty level (1/2/3) : \n");
+    scanf("%d",&difficulty);
+    return difficulty;
+}
+int problem_beginner(void)
+{
+    int fill[4][4]= {DUA,SATU,EMPAT,TIGA,EMPAT,TIGA,DUA,SATU,TIGA,DUA,SATU,EMPAT,SATU,EMPAT,TIGA,DUA};
+
+    //GENERATE DISPLAY/HIDE
+    for (x=0;x<=3;x++)
+    {
+
+        for (y=0;y<=3;y++)
+        {
+            int z = rand() %4 ;
+            if (z>=2) fill[x][y] = fill[x][y];
+            else if (z<=1) fill[x][y] = SPACE ;
+        }
+
+    }
+
+    //PRINT PROBLEM
+
+    printf("\n\t\t\t ===== SUDOKU PROJECT V.0.2.4 =====");
+    printf("\n\t\t\t    ====== BEGINNER MODE ======)\n");
+    printf("\n\t\t\t   Player : %s \n",player_name);
+
+    printf("\n\t\t\t\t y(1) y(2) y(3) y(4) \n");
+    for (x=0;x<=3;x++)
+    {
+        printf("\t\t\t\t-------------------- \n");
+        printf ("\t\t\t   x(%d) | %c |  %c |  %c |  %c | \n",(x+1),fill[x][0],fill[x][1],fill[x][2],fill[x][3]);
+
+    }
+        printf("\t\t\t\t-------------------- \n");
+
+    //INPUT, CHECKING, & DISPLAY SEQUENCES
+    do
+    {
+    //SOLVING
+    int a,b,nilai_pre_convert,temp_a,temp_b;
+    char nilai;
+
+    printf("1. Input the desired line : ");
+    scanf("%d",&a);
+    a=a-1;
+    printf("2. Input the desired row : ");
+    scanf("%d",&b);
+    b=b-1;
+    printf("3. Input the desired magnitude : ");
+    scanf("%d",&nilai_pre_convert);
+
+        switch(nilai_pre_convert)
+        {
+            case 1 : nilai = SATU; break;
+            case 2 : nilai = DUA; break;
+            case 3 : nilai = TIGA; break;
+            case 4 : nilai = EMPAT; break;
+            case 5 : nilai = LIMA; break;
+            case 6 : nilai = ENAM; break;
+            case 7 : nilai = TUJUH; break;
+            case 8 : nilai = DELAPAN; break;
+            case 9 : nilai = SEMBILAN; break;
+            default : nilai = SPACE; break;
+        }
+
+    if ((a==temp_a)&&(b==temp_b)||fill[a][b]==SPACE)
+    {
+        fill[a][b] = nilai;
+        temp_a=a;
+        temp_b=b;
+    }
+
+    system("CLS");
+
+    //PRINT REVISION
+    printf("\n\t\t\t ===== SUDOKU PROJECT V.0.2.4 =====");
+    printf("\n\t\t\t    ====== BEGINNER MODE ======)\n");
+    printf("\n\t\t\t   Player : %s \n",player_name);
+
+    printf("\n\t\t\t\t y(1) y(2) y(3) y(4) \n");
+    for (x=0;x<=3;x++)
+    {
+        printf("\t\t\t\t-------------------- \n");
+        printf ("\t\t\t   x(%d) | %c |  %c |  %c |  %c | \n",(x+1),fill[x][0],fill[x][1],fill[x][2],fill[x][3]);
+
+    }
+        printf("\t\t\t\t-------------------- \n");
+
+    }
+
+    while((fill[0][0]==SPACE)||(fill[0][1]==SPACE)||(fill[0][2]==SPACE)||(fill[0][03]==SPACE)||
+          (fill[1][0]==SPACE)||(fill[1][1]==SPACE)||(fill[1][2]==SPACE)||(fill[1][03]==SPACE)||
+          (fill[2][0]==SPACE)||(fill[2][1]==SPACE)||(fill[2][2]==SPACE)||(fill[2][03]==SPACE)||
+          (fill[3][0]==SPACE)||(fill[3][1]==SPACE)||(fill[3][2]==SPACE)||(fill[3][03]==SPACE)==1);
+
+    //CHECKINg SEQUENCES
+    int index_x,index_y,loop;
+    for (loop=0;loop<=3;loop++)
+    {
+        index_x=0;
+        index_y=0;
+        for (x=0;x<=3;x++)
+        {
+            index_x= index_x + fill[x][loop];
+        }
+        for (y=0;y<=3;y++)
+        {
+            index_y= index_y + fill[loop][y];
+        }
+        if (index_x!=index_y) return result=0, level=1;
+    }
+    return result=1,level=1;
+}
+
+
+
+int problem_intermediate(void)
+{
+    int fill[6][6]={ENAM,LIMA,DUA,EMPAT,TIGA,SATU,TIGA,SATU,EMPAT,ENAM,DUA,LIMA,EMPAT,TIGA,ENAM,SATU,LIMA,DUA,SATU,DUA,LIMA,TIGA,ENAM,EMPAT,DUA,EMPAT,TIGA,LIMA,SATU,ENAM,LIMA,ENAM,SATU,DUA,EMPAT,TIGA};
+
+    //GENERATE DISPLAY/HIDE
+    for (x=0;x<=5;x++)
+    {
+
+        for (y=0;y<=5;y++)
+        {
+            int z = rand() %4 ;
+            if (z>=2) fill[x][y] = fill[x][y];
+            else if (z<=1) fill[x][y] = SPACE ;
+        }
+
+    }
+
+    //PRINT PROBLEM
+    printf("\n\t\t    ======= SUDOKU PROJECT V.0.2.4 =======");
+    printf("\n\t\t       ====== INTERMEDIATE MODE ======)\n");
+    printf("\n\t\t\t   Player : %s \n",player_name);
+
+    printf("\n\t\t\t y(1) y(2) y(3) y(4) y(5) y(6) \n");
+    for (x=0;x<=5;x++)
+    {
+        printf("\t\t\t------------------------------ \n");
+        printf ("\t\t   x(%d) | %c |  %c |  %c |  %c |  %c |  %c | \n",(x+1),fill[x][0],fill[x][1],fill[x][2],fill[x][3],fill[x][4],fill[x][5]);
+
+    }
+        printf("\t\t\t------------------------------ \n");
+
+
+    //INPUT, CHECKING, & DISPLAY SEQUENCES
+    do
+    {
+    //SOLVING
+    int a,b,nilai_pre_convert,temp_a,temp_b;
+    char nilai;
+
+    printf("1. Input the desired line : ");
+    scanf("%d",&a);
+    a=a-1;
+    printf("2. Input the desired row : ");
+    scanf("%d",&b);
+    b=b-1;
+    printf("3. Input the desired magnitude : ");
+    scanf("%d",&nilai_pre_convert);
+
+        switch(nilai_pre_convert)
+        {
+            case 1 : nilai = SATU; break;
+            case 2 : nilai = DUA; break;
+            case 3 : nilai = TIGA; break;
+            case 4 : nilai = EMPAT; break;
+            case 5 : nilai = LIMA; break;
+            case 6 : nilai = ENAM; break;
+            case 7 : nilai = TUJUH; break;
+            case 8 : nilai = DELAPAN; break;
+            case 9 : nilai = SEMBILAN; break;
+            default : nilai = SPACE; break;
+        }
+    if ((a==temp_a)&&(b==temp_b)||fill[a][b]==SPACE)
+    {
+        fill[a][b] = nilai;
+        temp_a=a;
+        temp_b=b;
+    }
+
+    system("CLS");
+
+    //PRINT REVISION
+    printf("\n\t\t    ======= SUDOKU PROJECT V.0.2.4 =======");
+    printf("\n\t\t       ====== INTERMEDIATE MODE ======)\n");
+    printf("\n\t\t\t   Player : %s \n",player_name);
+
+    printf("\n\t\t\t y(1) y(2) y(3) y(4) y(5) y(6) \n");
+    for (x=0;x<=5;x++)
+    {
+        printf("\t\t\t------------------------------ \n");
+         printf ("\t\t   x(%d) | %c |  %c |  %c |  %c |  %c |  %c | \n",(x+1),fill[x][0],fill[x][1],fill[x][2],fill[x][3],fill[x][4],fill[x][5]);
+
+    }
+        printf("\t\t\t------------------------------ \n");
+    }
+    while((fill[0][0]==SPACE)||(fill[0][1]==SPACE)||(fill[0][2]==SPACE)||(fill[0][3]==SPACE)||(fill[0][4]==SPACE)||(fill[0][5]==SPACE)||
+          (fill[1][0]==SPACE)||(fill[1][1]==SPACE)||(fill[1][2]==SPACE)||(fill[1][3]==SPACE)||(fill[1][4]==SPACE)||(fill[1][5]==SPACE)||
+          (fill[2][0]==SPACE)||(fill[2][1]==SPACE)||(fill[2][2]==SPACE)||(fill[2][3]==SPACE)||(fill[2][4]==SPACE)||(fill[2][5]==SPACE)||
+          (fill[3][0]==SPACE)||(fill[3][1]==SPACE)||(fill[3][2]==SPACE)||(fill[3][3]==SPACE)||(fill[3][4]==SPACE)||(fill[3][5]==SPACE)||
+          (fill[4][0]==SPACE)||(fill[4][1]==SPACE)||(fill[4][2]==SPACE)||(fill[4][3]==SPACE)||(fill[4][4]==SPACE)||(fill[4][5]==SPACE)||
+          (fill[5][0]==SPACE)||(fill[5][1]==SPACE)||(fill[5][2]==SPACE)||(fill[5][3]==SPACE)||(fill[5][4]==SPACE)||(fill[5][5]==SPACE)==1);
+
+    //CHECKINg SEQUENCES
+    int index_x,index_y,loop;
+    for (loop=0;loop<=5;loop++)
+    {
+        index_x=0;
+        index_y=0;
+        for (x=0;x<=5;x++)
+        {
+            index_x= index_x + fill[x][loop];
+        }
+        for (y=0;y<=5;y++)
+        {
+            index_y= index_y + fill[loop][y];
+        }
+        if (index_x!=index_y) return result=0, level=2;
+    }
+    return result=1, level=2;
+}
+
+
+int problem_expert (void)
+{
+    int fill[9][9]={TUJUH,DUA,TIGA,DELAPAN,EMPAT,ENAM,SATU,LIMA,SEMBILAN,ENAM,SATU,LIMA,TIGA,SEMBILAN,DUA,EMPAT,TUJUH,DELAPAN,DELAPAN,EMPAT,SEMBILAN,TUJUH,SATU,LIMA,ENAM,TIGA,DUA,TIGA,TUJUH,DELAPAN,ENAM,LIMA,EMPAT,SEMBILAN,DUA,SATU,SATU,SEMBILAN,EMPAT,DUA,DELAPAN,TUJUH,TIGA,ENAM,LIMA,DUA,LIMA,ENAM,SEMBILAN,TIGA,SATU,DELAPAN,EMPAT,TUJUH,LIMA,ENAM,SATU,EMPAT,TUJUH,SEMBILAN,DUA,DELAPAN,TIGA,EMPAT,DELAPAN,TUJUH,SATU,DUA,TIGA,LIMA,SEMBILAN,ENAM,SEMBILAN,TIGA,DUA,LIMA,ENAM,DELAPAN,TUJUH,SATU,EMPAT};
+
+    //GENERATE DISPLAY/HIDE
+    for (x=0;x<=8;x++)
+    {
+
+        for (y=0;y<=8;y++)
+        {
+            int z = rand() %4 ;
+            if (z>=2) fill[x][y] = fill[x][y];
+            else if (z<=1) fill[x][y] = SPACE ;
+        }
+
+    }
+
+    //PRINT PROBLEM
+    printf("\n\t\t    ======= SUDOKU PROJECT V.0.2.4 =======");
+    printf("\n\t\t        ======== EXPERT MODE ========)\n");
+    printf("\n\t\t\t   Player : %s \n",player_name);
+
+    printf("\n\t\t y(1) y(2) y(3) y(4) y(5) y(6) y(7) y(8) y(9) \n");
+    for (x=0;x<=8;x++)
+    {
+
+        printf("\t\t----------------------------------------------\n");
+        printf ("\t   x(%d) |  %c |  %c |  %c |  %c |  %c |  %c |  %c |  %c |  %c | \n",(x+1),fill[x][0],fill[x][1],fill[x][2],fill[x][3],fill[x][4],fill[x][5],fill[x][6],fill[x][7],fill[x][8]);
+
+    }
+        printf("\t\t----------------------------------------------\n");
+
+    //INPUT, CHECKING, & DISPLAY SEQUENCES
+    do
+    {
+    //SOLVING
+    int a,b,nilai_pre_convert,temp_a,temp_b;
+    char nilai;
+
+    printf("1. Input the desired line : ");
+    scanf("%d",&a);
+    a=a-1;
+    printf("2. Input the desired row : ");
+    scanf("%d",&b);
+    b=b-1;
+    printf("3. Input the desired magnitude : ");
+    scanf("%d",&nilai_pre_convert);
+
+        switch(nilai_pre_convert)
+        {
+            case 1 : nilai = SATU; break;
+            case 2 : nilai = DUA; break;
+            case 3 : nilai = TIGA; break;
+            case 4 : nilai = EMPAT; break;
+            case 5 : nilai = LIMA; break;
+            case 6 : nilai = ENAM; break;
+            case 7 : nilai = TUJUH; break;
+            case 8 : nilai = DELAPAN; break;
+            case 9 : nilai = SEMBILAN; break;
+            default : nilai = SPACE; break;
+        }
+    if ((a==temp_a)&&(b==temp_b)||fill[a][b]==SPACE)
+    {
+        fill[a][b] = nilai;
+        temp_a=a;
+        temp_b=b;
+    }
+
+    system("CLS");
+
+    //PRINT REVISION
+    printf("\n\t\t    ======= SUDOKU PROJECT V.0.2.4 =======");
+    printf("\n\t\t        ======== EXPERT MODE ========)\n");
+    printf("\n\t\t\t   Player : %s \n",player_name);
+
+    printf("\n\t\t y(1) y(2) y(3) y(4) y(5) y(6) y(7) y(8) y(9) \n");
+    for (x=0;x<=8;x++)
+    {
+
+        printf("\t\t----------------------------------------------\n");
+        printf ("\t   x(%d) |  %c |  %c |  %c |  %c |  %c |  %c |  %c |  %c |  %c | \n",(x+1),fill[x][0],fill[x][1],fill[x][2],fill[x][3],fill[x][4],fill[x][5],fill[x][6],fill[x][7],fill[x][8]);
+
+    }
+        printf("\t\t----------------------------------------------\n");
+
+    }
+    while((fill[0][0]==SPACE)||(fill[0][1]==SPACE)||(fill[0][2]==SPACE)||(fill[0][3]==SPACE)||(fill[0][4]==SPACE)||(fill[0][5]==SPACE)||(fill[0][6]==SPACE)||(fill[0][7]==SPACE)||(fill[0][8]==SPACE)||
+          (fill[1][0]==SPACE)||(fill[1][1]==SPACE)||(fill[1][2]==SPACE)||(fill[1][3]==SPACE)||(fill[1][4]==SPACE)||(fill[1][5]==SPACE)||(fill[1][6]==SPACE)||(fill[1][7]==SPACE)||(fill[1][8]==SPACE)||
+          (fill[2][0]==SPACE)||(fill[2][1]==SPACE)||(fill[2][2]==SPACE)||(fill[2][3]==SPACE)||(fill[2][4]==SPACE)||(fill[2][5]==SPACE)||(fill[2][6]==SPACE)||(fill[2][7]==SPACE)||(fill[2][8]==SPACE)||
+          (fill[3][0]==SPACE)||(fill[3][1]==SPACE)||(fill[3][2]==SPACE)||(fill[3][3]==SPACE)||(fill[3][4]==SPACE)||(fill[3][5]==SPACE)||(fill[3][6]==SPACE)||(fill[3][7]==SPACE)||(fill[3][8]==SPACE)||
+          (fill[4][0]==SPACE)||(fill[4][1]==SPACE)||(fill[4][2]==SPACE)||(fill[4][3]==SPACE)||(fill[4][4]==SPACE)||(fill[4][5]==SPACE)||(fill[4][6]==SPACE)||(fill[4][7]==SPACE)||(fill[4][8]==SPACE)||
+          (fill[5][0]==SPACE)||(fill[5][1]==SPACE)||(fill[5][2]==SPACE)||(fill[5][3]==SPACE)||(fill[5][4]==SPACE)||(fill[5][5]==SPACE)||(fill[5][6]==SPACE)||(fill[5][7]==SPACE)||(fill[5][8]==SPACE)||
+          (fill[6][0]==SPACE)||(fill[6][1]==SPACE)||(fill[6][2]==SPACE)||(fill[6][3]==SPACE)||(fill[6][4]==SPACE)||(fill[6][5]==SPACE)||(fill[6][6]==SPACE)||(fill[6][7]==SPACE)||(fill[6][8]==SPACE)||
+          (fill[7][0]==SPACE)||(fill[7][1]==SPACE)||(fill[7][2]==SPACE)||(fill[7][3]==SPACE)||(fill[7][4]==SPACE)||(fill[7][5]==SPACE)||(fill[7][6]==SPACE)||(fill[7][7]==SPACE)||(fill[7][8]==SPACE)||
+          (fill[8][0]==SPACE)||(fill[8][1]==SPACE)||(fill[8][2]==SPACE)||(fill[8][3]==SPACE)||(fill[8][4]==SPACE)||(fill[8][5]==SPACE)||(fill[8][6]==SPACE)||(fill[8][7]==SPACE)||(fill[8][8]==SPACE)==1);
+    //CHECKING SEQUENCES
+    int index_x,index_y,loop;
+    for (loop=0;loop<=8;loop++)
+    {
+        index_x=0;
+        index_y=0;
+        for (x=0;x<=8;x++)
+        {
+            index_x= index_x + fill[x][loop];
+        }
+        for (y=0;y<=8;y++)
+        {
+            index_y= index_y + fill[loop][y];
+        }
+        if (index_x!=index_y) return result=0, level=3;
+    }
+    return result=1, level=3;
+
+}
+
+    //WIN OR LOSE SEQUENCES
+    void win_lose_sequences(int result)
+    {
+        system("CLS");
+        if (result==1)
+        {
+            printf("\t\t=================================================== \n");
+            printf("\t\tYb  dP .d88b. 8    8    Yb        dP 888 8b  8 \n");
+            printf("\t\t YbdP  8P  Y8 8    8     Yb  db  dP   8  8Ybm8 \n");
+            printf("\t\t  YP   8b  d8 8b..d8      YbdPYbdP    8  8  8 \n");
+            printf("\t\t  88   `Y88P' `Y88P'       YP  YP    888 8   8 \n");
+            printf("\t\t=================================================== \n");
+            printf("\t\t            CONGRATULATIONS, YOU WIN!!! \n");
+            printf("\t\t=================================================== \n");
+
+        }
+        else if (result==0)
+        {
+            printf("\t\t=================================================== \n");
+            printf("\t\tYb  dP .d88b. 8    8    8    .d88b. .d88b. 8888 \n");
+            printf("\t\t YbdP  8P  Y8 8    8    8    8P  Y8 YPwww. 8www \n");
+            printf("\t\t  YP   8b  d8 8b..d8    8    8b  d8     d8 8    \n");
+            printf("\t\t  88   `Y88P' `Y88P'    8888 `Y88P' `Y88P' 8888 \n");
+            printf("\t\t=================================================== \n");
+            printf("\t\t                TOO BAD, YOU LOSE!!! \n");
+            printf("\t\t=================================================== \n");
+        }
+    }
+
+
+
